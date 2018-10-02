@@ -1,0 +1,20 @@
+{
+   "1. Nov 2018": {
+      "1": {
+         "arrivalAirport": "Riga",
+         "arrivalTimeInLocal": "13:50",
+         "cheapestPrice": "$42.80",
+         "departureAirport": "Oslo-Gardermoen",
+         "departureTimeInLocal": "11:20",
+         "taxes": "$24.90"
+      },
+      "2": {
+         "arrivalAirport": "Riga",
+         "arrivalTimeInLocal": "21:15",
+         "cheapestPrice": "$42.80",
+         "departureAirport": "Oslo-Gardermoen",
+         "departureTimeInLocal": "18:45",
+         "taxes": "$24.90"
+      }
+   }
+}
