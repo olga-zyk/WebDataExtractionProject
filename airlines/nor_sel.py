@@ -8,7 +8,7 @@ import re
 import json
 
 
-class NorCrawler(CrawlerInterface):
+class NorSelen(CrawlerInterface):
 
     def __init__(self):
         self.logger = logging.getLogger(str(self.__class__))
@@ -48,11 +48,10 @@ class NorCrawler(CrawlerInterface):
         self.browser.close()
 
     def get_new_url(self):
-        # get url to the next page in nor_crawler object browser
-        second_page = self.browser.page_source
+        # save current page url
         self.new_url.update({'0': self.browser.current_url})
 
-        with open('urls/doc.json', 'w') as json_file:
+        with open('first_page_url/nor_airlines_url.json', 'w') as json_file:
             json.dump(self.new_url, json_file)
 
     def load_search_form(self):
@@ -68,6 +67,7 @@ class NorCrawler(CrawlerInterface):
         elem = self.browser.find_element_by_id('airport-select-origin')
         elem.clear()
         elem.send_keys(self.flight['from'])
+        self.browser.find_element_by_id('airport-select-origin').click()
         self.browser.implicitly_wait(6)
         self.browser.find_element_by_xpath('//*[@id="OSL"]/button').click()
 
@@ -83,22 +83,19 @@ class NorCrawler(CrawlerInterface):
 
         # open datepicker
         self.browser.find_element_by_class_name('calendar__input').click()
+        # switch to the datepicker
+        self.browser.find_element_by_name('availabilityOutboundDate')
+        # set month
         self.set_datepicker_month()
-
-        # Outbound
-        self.browser.find_elements_by_xpath('//*[@id="outboundDate"]/div/div/label/input')
-
-        self.browser.find_element_by_xpath('/html/body/main/div[4]/div/div[2]/div[2]/div/div/form/div/div/div/fieldset[2]/div').click()
-        self.browser.find_element_by_class_name('calendar__input').click()
-
-
-        self.browser.find_element_by_xpath('//button[contains (., "01")]')
-        ActionChains(self.browser).move_to_element(elem).click().perform()
-
-        # click on empty area
-        self.browser.find_element_by_xpath(
-            '/html/body/main/div[4]/div/div[2]/div[2]/div/div/form/div/div/div/fieldset[2]/div').click()
-        self.browser.implicitly_wait(3)
+        # move to table
+        t_body = self.browser.find_element_by_xpath('//*[@id="outboundDate"]/div/div/div[1]/div/div[1]/div/table/tbody')
+        ActionChains(self.browser).move_to_element(t_body).perform()
+        tds_in_tbody = self.browser.find_elements_by_css_selector('td')
+        # choose date
+        for el in tds_in_tbody:
+            if el.text == '01':
+                el.click()
+                break
 
     def submit_the_form(self):
         # Submit the form
@@ -112,7 +109,6 @@ class NorCrawler(CrawlerInterface):
                      self.browser.find_elements_by_css_selector('.ui-datepicker-content')[0].text) != self.flight['month']:
             self.browser.find_element_by_xpath(
                 '//*[@id="outboundDate"]/div/div/div[1]/div/div[1]/div/div/button[3]').click()
-            pass
 
     def get_data(self):
         pass
